@@ -10,5 +10,11 @@ console.log("done");
 
 //Non Blocking
 fs.readFile("./txt/start.txt", "utf-8", (err, data) => {
-  console.log(data);
+  fs.readFile(`./txt/${data}.txt`, "utf-8", (err, data2) => {
+    fs.readFile("./txt/append.txt", "utf-8", (err, data3) => {
+      fs.writeFile("./txt/final.txt", `${data2}\n${data3}`, (err) => {
+        console.log("your File Has Been Written");
+      });
+    });
+  });
 });
