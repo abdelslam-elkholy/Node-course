@@ -1,6 +1,7 @@
 "use strict";
 const http = require("http");
 const fs = require("fs");
+const url = require("url");
 ///////////////////////
 //Files
 //
@@ -28,6 +29,7 @@ const fs = require("fs");
 const replaceTemplate = (temp, product) => {
   let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
   output = output.replace(/{%IMAGE%}/g, product.image);
+  output = output.replace(/{%QUANTITY%}/g, product.quantity);
   output = output.replace(/{%PRICE%}/g, product.price);
   output = output.replace(/{%FROM%}/g, product.from);
   output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
@@ -57,18 +59,24 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const products = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
-  if (pathName === "/" || pathName === "/overview") {
-    console.log(pathName);
+  const { query, pathname } = url.parse(req.url, true);
+  if (pathname === "/" || pathname === "/overview") {
+    console.log(pathname);
     res.writeHead(200, { "Content-type": "text/html" });
 
-    const cardsHtml = products.map((el) => replaceTemplate(tempCard, el));
-    console.log(cardsHtml);
-    res.end(tempOverview);
-  } else if (pathName === "/product") {
-    console.log(pathName);
-    res.end("This is product");
-  } else if (pathName === "/api") {
+    const cardsHtml = products
+      .map((el) => replaceTemplate(tempCard, el))
+      .join("");
+    const output = tempOverview.replace("{%PRODUCT_CARD%}", cardsHtml);
+
+    res.end(output);
+  } else if (pathname === "/product") {
+    res.writeHead(200, { "Content-type": "text/html" });
+    const product = products[query.id];
+    const output = replaceTemplate(tempProduct, product);
+
+    res.end(output);
+  } else if (pathname === "/api") {
     res.writeHead(200, {
       "Content-type": "application/json",
     });
