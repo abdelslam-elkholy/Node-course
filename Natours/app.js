@@ -90,6 +90,38 @@ const createTour = (req, res) => {
   );
 };
 
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: "success",
+    data: null,
+  });
+};
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: "success",
+    data: null,
+  });
+};
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: "success",
+    data: null,
+  });
+};
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: "success",
+    data: null,
+  });
+};
+
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: "success",
+    data: null,
+  });
+};
+
 app.route("/api/v1/tours").get(getAllTours).post(createTour);
 app
   .route("/api/v1/tours/:id")
