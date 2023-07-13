@@ -31,12 +31,28 @@ app.get("/api/v1/tours/:id", (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
 
+  if (!tour) {
+    res.status(404).json({
+      status: "failed",
+      message: "invalid",
+    });
+  }
   res.status(200).json({
     status: "Success",
     data: {
       tour,
     },
   });
+});
+
+app.patch("/api/v1/tours/:id", (req, res) => {
+  const id = req.params.id * 1;
+  if (id > tours[length - 1]) {
+    res.status(404).json({
+      messag: "invalid",
+      status: "Failed",
+    });
+  }
 });
 
 app.post("/api/v1/tours", (req, res) => {
