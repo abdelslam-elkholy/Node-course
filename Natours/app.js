@@ -1,7 +1,8 @@
+const { log } = require("console");
 const express = require("express");
 const fs = require("fs");
 const app = express();
-
+app.use(express.json());
 // app.get("/", (req, res) => {
 //   res.status(404).json({
 //     message: "Hey from The server",
@@ -19,8 +20,21 @@ const tours = JSON.parse(
 app.get("/api/v1/tours", (req, res) => {
   res.status(200).json({
     status: "success",
+    toursLength: tours.length,
     data: {
       tours,
+    },
+  });
+});
+
+app.get("/api/v1/tours/:id", (req, res) => {
+  const id = req.params.id * 1;
+  const tour = tours.find((el) => el.id === id);
+
+  res.status(200).json({
+    status: "Success",
+    data: {
+      tour,
     },
   });
 });
