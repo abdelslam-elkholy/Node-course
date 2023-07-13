@@ -16,8 +16,7 @@ app.use(express.json());
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
-
-app.get("/api/v1/tours", (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: "success",
     toursLength: tours.length,
@@ -25,9 +24,9 @@ app.get("/api/v1/tours", (req, res) => {
       tours,
     },
   });
-});
+};
 
-app.get("/api/v1/tours/:id", (req, res) => {
+const getTour = (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
 
@@ -43,19 +42,36 @@ app.get("/api/v1/tours/:id", (req, res) => {
       tour,
     },
   });
-});
+};
 
-app.patch("/api/v1/tours/:id", (req, res) => {
+const updateTour = (req, res) => {
   const id = req.params.id * 1;
-  if (id > tours[length - 1]) {
+  if (id > tours.length - 1) {
     res.status(404).json({
-      messag: "invalid",
       status: "Failed",
+      message: "invalid",
     });
   }
-});
+  res.status(200).json({
+    message: `<p> Updated</p>`,
+  });
+};
 
-app.post("/api/v1/tours", (req, res) => {
+const deleteTour = (req, res) => {
+  const id = req.params.id * 1;
+  if (id > tours.length - 1) {
+    res.status(404).json({
+      status: "Failed",
+      message: "invalid",
+    });
+  }
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+};
+
+const createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
@@ -72,7 +88,22 @@ app.post("/api/v1/tours", (req, res) => {
       });
     }
   );
-});
+};
+
+app.route("/api/v1/tours").get(getAllTours).post(createTour);
+app
+  .route("/api/v1/tours/:id")
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
+
+app.route("/api/v1/users").get(getAllUsers).post(createUser);
+app
+  .route("/api/v1/users/:id")
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`listening from porst ${port}`);
