@@ -1,6 +1,17 @@
 const Tour = require("./../models/tourModel");
 const APIFeatures = require("./../utils/apiFeatures");
 
+exports.getMonthlyPlane = async (req, res) => {
+  const year = req.body.year * 1;
+  try {
+    const tours = await Tour.aggregate([
+      {
+        $unwind: "startDates",
+      },
+    ]);
+  } catch (err) {}
+};
+
 exports.getStats = async (req, res) => {
   try {
     const stats = await Tour.aggregate([
