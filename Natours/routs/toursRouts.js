@@ -8,6 +8,8 @@ router
 
 router.route("/stats").get(tourCountroller.getStats);
 
+router.route("/monthly-plan/:year").get(tourCountroller.getMonthlyPlane);
+
 router
   .route("/")
   .get(tourCountroller.getAllTours)
