@@ -6,6 +6,8 @@ router
   .route("/get-cheapest")
   .get(tourCountroller.getCheapest, tourCountroller.getAllTours);
 
+router.route("/stats").get(tourCountroller.getStats);
+
 router
   .route("/")
   .get(tourCountroller.getAllTours)

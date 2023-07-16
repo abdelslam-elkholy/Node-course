@@ -1,10 +1,46 @@
 const Tour = require("./../models/tourModel");
 const APIFeatures = require("./../utils/apiFeatures");
 
+exports.getStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: { $toUpper: "$difficulty" },
+          avgRating: { $avg: "$ratingsAverage" },
+          avgPrice: { $avg: "$price" },
+          numTours: { $sum: 1 },
+          maxPrice: { $max: "$price" },
+          minPrice: { $min: "$price" },
+        },
+      },
+      {
+        $sort: { avgPrice: -1 },
+      },
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      toursLength: stats.length,
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "failed",
+      message: err,
+    });
+  }
+};
+
 exports.getCheapest = async (req, res, next) => {
-  req.query.sort = "price, -ratingAverage";
+  req.query.sort = "price, -ratingsAverage";
   req.query.limit = 5;
-  req.query.fields = `name , price , ratingAverage , summary`;
+  req.query.fields = `name , price , ratingsAverage , summary`;
 
   next();
 };
