@@ -3,6 +3,10 @@ const tourCountroller = require("./../controllers/tourController");
 const router = express.Router();
 
 router
+  .route("/get-cheapest")
+  .get(tourCountroller.getCheapest, tourCountroller.getAllTours);
+
+router
   .route("/")
   .get(tourCountroller.getAllTours)
   .post(tourCountroller.createTour);
