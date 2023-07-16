@@ -7,6 +7,8 @@ const tourSchema = new mongoose.Schema(
       required: [true, "Must Have Name"],
       unuiqe: true,
       trim: true,
+      minLength: [5, " length must be greater than 4"],
+      maxLength: [40, " length must be less than 40"],
     },
     duration: {
       type: Number,
