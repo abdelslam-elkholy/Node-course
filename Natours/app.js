@@ -1,5 +1,5 @@
 const express = require("express");
-const AppError = require("./utils/appError");
+const errorHandeler = require("./utils/appError");
 const app = express();
 
 app.use(express.json());
@@ -14,7 +14,12 @@ app.all("*", (req, res, next) => {
   // const err = new Error(`Can't find ${req.originalUrl} in the server`);
   // err.status = "fail";
   // err.statusCode = 404;
-  next(new AppError(`Can't find ${req.originalUrl} in the server`, 404));
+  next(
+    errorHandeler.createError(
+      `Can't find ${req.originalUrl} in the server`,
+      404
+    )
+  );
 });
 
 app.use((err, req, res, next) => {
