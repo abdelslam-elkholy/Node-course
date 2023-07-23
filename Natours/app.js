@@ -1,4 +1,5 @@
 const express = require("express");
+const AppError = require("./utils/appError");
 const app = express();
 
 app.use(express.json());
@@ -10,13 +11,14 @@ app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 
 app.all("*", (req, res, next) => {
-  const err = new Error(`Can't find ${req.url} in the server`);
-  err.status = "fail";
-  err.statusCode = 404;
-  next(err);
+  // const err = new Error(`Can't find ${req.originalUrl} in the server`);
+  // err.status = "fail";
+  // err.statusCode = 404;
+  next(new AppError(`Can't find ${req.originalUrl} in the server`, 404));
 });
 
 app.use((err, req, res, next) => {
+  console.log(err);
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
