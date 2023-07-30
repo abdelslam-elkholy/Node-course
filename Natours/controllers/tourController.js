@@ -1,5 +1,7 @@
 const Tour = require("./../models/tourModel");
 const APIFeatures = require("./../utils/apiFeatures");
+const catchAsync = require("./../utils/catchAsync");
+const createError = require("./../utils/appError");
 
 exports.getMonthlyPlane = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
@@ -103,6 +105,9 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
 
+  if (!tour) {
+    return next(createError("Ther Is no tour with this id", 404));
+  }
   res.status(200).json({
     status: "Success",
     data: {
@@ -133,10 +138,6 @@ exports.deleteTour = catchAsync(async (req, res, next) => {
     },
   });
 });
-
-const catchAsync = (fun) => {
-  return (req, res, next) => fun(req, res, next).catch(next);
-};
 
 exports.createTour = catchAsync(async (req, res, next) => {
   const newTour = await Tour.create(req.body);

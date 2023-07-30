@@ -16,7 +16,7 @@ exports.createError = (message, statusCode) => {
   error.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
   error.isOperational = true;
 
-  Error.captureStackTrace(error, createError);
+  // Error.captureStackTrace(error, createError);
 
   return error;
 };
