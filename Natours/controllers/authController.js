@@ -1,4 +1,5 @@
 const User = require("./../models/userModel");
+const createError = require("./../utils/appError");
 const catchAsync = require("./../utils/catchAsync");
 const jwt = require("jsonwebtoken");
 
@@ -29,4 +30,13 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
+  const user = User.findOne({ email }).select("+password");
+  if (!user || !user.validatePassword(password, user.password))
+    return next(createError("Invalid Email Or Password", 401));
+
+  const token = createToken(user.id);
+  res.status(200).json({
+    message: "success",
+    token,
+  });
 });
