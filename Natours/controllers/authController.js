@@ -8,6 +8,7 @@ const createToken = (id) => {
   });
   return token;
 };
+
 exports.signUp = catchAsync(async (req, res, next) => {
   const user = await User.create({
     name: req.body.name,
@@ -24,4 +25,8 @@ exports.signUp = catchAsync(async (req, res, next) => {
       user,
     },
   });
+});
+
+exports.login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
 });
