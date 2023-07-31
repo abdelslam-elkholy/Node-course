@@ -1,6 +1,6 @@
 const User = require("./../models/userModel");
-const createError = require("./../utils/appError");
 const catchAsync = require("./../utils/catchAsync");
+const AppError = require("./../utils/appError");
 const jwt = require("jsonwebtoken");
 
 const createToken = (id) => {
@@ -30,9 +30,13 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  const user = User.findOne({ email }).select("+password");
-  if (!user || !user.validatePassword(password, user.password))
-    return next(createError("Invalid Email Or Password", 401));
+  if (!email || !password) {
+    return next(new AppError("You mUst Provide Email and password", 400));
+  }
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user || !(await user.validatePassword(password, user.password)))
+    return next(new AppError("Invalid Email Or Password", 401));
 
   const token = createToken(user.id);
   res.status(200).json({

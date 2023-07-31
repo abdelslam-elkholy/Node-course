@@ -1,22 +1,22 @@
-// class AppError extends Error {
-//   constructor(message, statusCode) {
-//     super(message);
-//     this.statusCode = statusCode;
-//     this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
-//     this.isOperational = true;
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
+    this.isOperational = true;
 
-//     Error.captureStackTrace(this, this.constructor);
-//   }
-// }
-// module.exports = AppError;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+module.exports = AppError;
 
-exports.createError = (message, statusCode) => {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  error.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
-  error.isOperational = true;
+// module.exports = (message, statusCode) => {
+//   const error = new Error(message);
+//   error.statusCode = statusCode;
+//   error.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
+//   error.isOperational = true;
 
-  // Error.captureStackTrace(error, createError);
+//   Error.captureStackTrace(error, createError);
 
-  return error;
-};
+//   return error;
+// };
