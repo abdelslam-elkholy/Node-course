@@ -9,14 +9,15 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-async function dbConnect() {
+const dbConnect = async () => {
   try {
     await mongoose.connect(DB);
     console.log("Connected to the database!");
   } catch (error) {
     console.error("Database connection error:", error);
   }
-}
+};
+
 dbConnect();
 
 const port = process.env.PORT || 3000;
