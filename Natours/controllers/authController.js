@@ -2,6 +2,7 @@ const User = require("./../models/userModel");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const jwt = require("jsonwebtoken");
+const { pronisify, promisify } = require("util");
 
 const createToken = (id) => {
   const token = jwt.sign({ id }, process.env.JWT_STRING, {
@@ -30,17 +31,43 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
+  console.log(req.body);
+
   if (!email || !password) {
     return next(new AppError("You mUst Provide Email and password", 400));
   }
   const user = await User.findOne({ email }).select("+password");
 
-  if (!user || !(await user.validatePassword(user.password)))
+  if (!user || (await user.validatePassword(password)))
+    // console.log(user, await user.validatePassword(password));
     return next(new AppError("Invalid Email Or Password", 401));
 
-  const token = createToken(user.id);
+  const token = createToken(user._id);
   res.status(200).json({
     message: "success",
     token,
   });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  let token;
+  if (
+    req.headers.authentecation &&
+    req.headers.authentecation.starstWith("Bearer")
+  ) {
+    token = req.headers.authentecation.split(" ")[1];
+  }
+  if (!token) return next(new AppError("you are not logged in", 401));
+
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_STRING);
+  const existUser = await User.findById(decoded.id);
+
+  if (!existUser) return next(new AppError("the user isnt exist anymore", 401));
+
+  if (!existUser.checkChangedPasswordTime(decoded.iat))
+    return next(new AppError("session ended pleas login again ", 401));
+
+  req.id = decoded.id;
+
+  next();
 });

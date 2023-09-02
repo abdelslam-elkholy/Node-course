@@ -1,12 +1,13 @@
 const express = require("express");
 const tourCountroller = require("./../controllers/tourController");
+const { protect } = require("./../controllers/authController");
 const router = express.Router();
 
 router
   .route("/get-cheapest")
   .get(tourCountroller.getCheapest, tourCountroller.getAllTours);
 
-router.route("/stats").get(tourCountroller.getStats);
+router.route("/stats").get(protect, tourCountroller.getStats);
 
 router.route("/monthly-plan/:year").get(tourCountroller.getMonthlyPlane);
 
