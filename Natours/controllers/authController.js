@@ -73,7 +73,18 @@ exports.protect = catchAsync(async (req, res, next) => {
     return next(new AppError("session ended pleas login again ", 401));
   }
 
-  req.id = decoded.id;
+  req.user = existUser;
 
   next();
 });
+
+exports.resterictTo = (...role) => {
+  return (req, res, next) => {
+    if (!role.includes(req.user.role)) {
+      console.log("working from forbidden");
+      return next(new AppError("Forbidden access", 403));
+    }
+
+    next();
+  };
+};
