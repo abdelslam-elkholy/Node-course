@@ -38,9 +38,10 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   const user = await User.findOne({ email }).select("+password");
 
-  if (!user || (await user.validatePassword(password)))
-    // console.log(user, await user.validatePassword(password));
+  if (!user || (await user.validatePassword(password))) {
+    console.log(user, await user.validatePassword(password));
     return next(new AppError("Invalid Email Or Password", 401));
+  }
 
   const token = createToken(user._id);
   res.status(200).json({
@@ -51,21 +52,26 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
+
   if (
-    req.headers.authentecation &&
-    req.headers.authentecation.starstWith("Bearer")
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
   ) {
-    token = req.headers.authentecation.split(" ")[1];
+    token = req.headers.authorization.split(" ")[1];
   }
+
   if (!token) return next(new AppError("you are not logged in", 401));
 
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_STRING);
   const existUser = await User.findById(decoded.id);
 
-  if (!existUser) return next(new AppError("the user isnt exist anymore", 401));
+  if (!existUser) {
+    return next(new AppError("the user isnt exist anymore", 401));
+  }
 
-  if (!existUser.checkChangedPasswordTime(decoded.iat))
+  if (existUser.checkChangedPasswordTime(decoded.iat)) {
     return next(new AppError("session ended pleas login again ", 401));
+  }
 
   req.id = decoded.id;
 
